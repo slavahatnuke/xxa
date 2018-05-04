@@ -1,6 +1,9 @@
 # xxa
 Copies source folder to destination folder through template engine.
 
+#### Install:
+- `npm i -g xxa`
+
 ### Conventions
 - files: `{{{option~pipe1~pip2~pipeN}}}.txt`
 - content: `{{{option | pipe1 | pip2 | pipeN}}}.txt`
