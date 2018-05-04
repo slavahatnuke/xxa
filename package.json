@@ -1,8 +1,11 @@
 {
   "name": "xxa",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Copies source folder to destination folder through template engine.",
   "main": "index.js",
+  "bin": {
+    "xxa": "bin/xxa.js"
+  },
   "scripts": {
     "test": "mocha --recursive --reporter spec",
     "test.watch": "mocha --recursive --reporter spec --watch"
