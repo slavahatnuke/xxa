@@ -5,10 +5,13 @@ const glob = util.promisify(require('glob'));
 const promiseSeries = require('promise.series');
 const escape = require('escape-string-regexp');
 const fs = require('fs-extra');
+const _ = require('lodash');
 
 const readFile = util.promisify(fs.readFile);
 const ensureFile = util.promisify(fs.ensureFile);
 const writeFile = util.promisify(fs.writeFile);
+
+const chalk = require('chalk');
 
 const Template = require('./Template');
 
@@ -28,22 +31,52 @@ const TemplateFactory = (templateContent, pipes) => {
   return template;
 };
 
+const ValidateGeneratePossibility = (normalisedFile, options) => {
+  const regexp = /{{{([^~}]+)/igm;
+  const match = normalisedFile.match(regexp);
+
+  if (match) {
+    const names = _.uniq(match
+      .map((name) => regexp.exec(name))
+      .map((result) => result && result[1])
+      .filter((it) => !!it));
+
+    const optionArray = Object.keys(options);
+    const isOk = names.every((name) => optionArray.includes(name));
+
+    if (isOk) {
+      return true
+    } else {
+      const nameOptions = names.map((name) => `--${name}="${name}"`).join(' ');
+      console.warn(chalk.yellow(`> [skip] ${normalisedFile}`));
+      console.warn(chalk.yellow(`> [require] ${nameOptions}`));
+
+      return false;
+    }
+  }
+
+  return true
+};
+
 const Generate = async(source, file, destination, options, pipes) => {
   const normalisedFile = NormaliseFile(source, file);
-  // console.log(normalisedFile, file, destination, options);
 
-  const templateFileContent = await readFile(file);
-  const fileContent = await TemplateFactory(templateFileContent, pipes).render(options);
+  if (ValidateGeneratePossibility(normalisedFile, options)) {
+    // console.log(normalisedFile, file, destination, options);
 
-  const filePathTemplate = normalisedFile.replace(/~/igm, '|');
-  const destinationFilePathRaw = await TemplateFactory(filePathTemplate, pipes).render(options);
-  const destinationFilePath = destinationFilePathRaw.replace(/\|/igm, '~')
+    const templateFileContent = await readFile(file);
+    const fileContent = await TemplateFactory(templateFileContent, pipes).render(options);
 
-  const outputFile = `${destination}/${destinationFilePath}`;
-  await ensureFile(outputFile);
-  await writeFile(outputFile, fileContent);
+    const filePathTemplate = normalisedFile.replace(/~/igm, '|');
+    const destinationFilePathRaw = await TemplateFactory(filePathTemplate, pipes).render(options);
+    const destinationFilePath = destinationFilePathRaw.replace(/\|/igm, '~')
 
-  console.log(`> [ok] ${outputFile}`);
+    const outputFile = `${destination}/${destinationFilePath}`;
+    await ensureFile(outputFile);
+    await writeFile(outputFile, fileContent);
+
+    console.log(chalk.green(`> [ok] ${outputFile}`));
+  }
 };
 
 module.exports = {
