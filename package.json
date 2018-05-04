@@ -1,6 +1,6 @@
 {
   "name": "xxa",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Copies source folder to destination folder through template engine.",
   "main": "index.js",
   "bin": {
