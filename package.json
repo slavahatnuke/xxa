@@ -11,11 +11,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "escape-string-regexp": "^1.0.5",
     "fs-extra": "^6.0.0",
     "glob": "^7.1.2",
     "lodash": "^4.17.10",
     "minimist": "^1.2.0",
     "pluralize": "^7.0.0",
+    "promise.series": "^0.2.0",
     "twig": "1.11.0"
   },
   "devDependencies": {
