@@ -36,7 +36,8 @@ const Generate = async(source, file, destination, options, pipes) => {
   const fileContent = await TemplateFactory(templateFileContent, pipes).render(options);
 
   const filePathTemplate = normalisedFile.replace(/~/igm, '|');
-  const destinationFilePath = await TemplateFactory(filePathTemplate, pipes).render(options);
+  const destinationFilePathRaw = await TemplateFactory(filePathTemplate, pipes).render(options);
+  const destinationFilePath = destinationFilePathRaw.replace(/\|/igm, '~')
 
   const outputFile = `${destination}/${destinationFilePath}`;
   await ensureFile(outputFile);
