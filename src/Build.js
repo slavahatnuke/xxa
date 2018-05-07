@@ -31,51 +31,53 @@ const TemplateFactory = (templateContent, pipes) => {
   return template;
 };
 
-const ValidateGeneratePossibility = (normalisedFile, options) => {
-  const regexp = /{{{([^~}]+)/igm;
-  const match = normalisedFile.match(regexp);
+const ValidateGeneratePossibility = (file, content, options) => {
+  const regexp = () => /{{{\s*([^}~\|\s]+)/igm;
+  const match = `${content}`.match(regexp());
 
   if (match) {
-    const names = _.uniq(match
-      .map((name) => regexp.exec(name))
-      .map((result) => result && result[1])
-      .filter((it) => !!it));
-
     const optionArray = Object.keys(options);
-    const isOk = names.every((name) => optionArray.includes(name));
 
-    if (isOk) {
-      return true
-    } else {
-      const nameOptions = names.map((name) => `--${name}="${name}"`).join(' ');
-      console.warn(chalk.yellow(`> [skip] ${normalisedFile}`));
-      console.warn(chalk.yellow(`> [require] ${nameOptions}`));
+    const names = _.uniq(match
+      .map((name) => regexp().exec(name))
+      .map((result) => result && result[1])
+      .filter((it) => !!it))
+      .filter((name) => !optionArray.includes(name));
+
+
+    if (names.length) {
+      const requiresString = names.map((name) => `--${name}="${name}"`).join(' ');
+
+      console.warn(chalk.yellow(`> [skip] ${file}`));
+      console.warn(chalk.yellow(`> [require] ${requiresString}`));
 
       return false;
     }
   }
 
-  return true
+  return true;
 };
 
 const Generate = async(source, file, destination, options, pipes) => {
   const normalisedFile = NormaliseFile(source, file);
+  const filePathTemplate = normalisedFile.replace(/~/igm, '|');
 
-  if (ValidateGeneratePossibility(normalisedFile, options)) {
+  if (ValidateGeneratePossibility(normalisedFile, filePathTemplate, options)) {
     // console.log(normalisedFile, file, destination, options);
 
-    const templateFileContent = await readFile(file);
-    const fileContent = await TemplateFactory(templateFileContent, pipes).render(options);
+    const templateFileContent = (await readFile(file)).toString();
 
-    const filePathTemplate = normalisedFile.replace(/~/igm, '|');
-    const destinationFilePathRaw = await TemplateFactory(filePathTemplate, pipes).render(options);
-    const destinationFilePath = destinationFilePathRaw.replace(/\|/igm, '~')
+    if (ValidateGeneratePossibility(normalisedFile, templateFileContent, options)) {
+      const fileContent = await TemplateFactory(templateFileContent, pipes).render(options);
+      const destinationFilePathRaw = await TemplateFactory(filePathTemplate, pipes).render(options);
+      const destinationFilePath = destinationFilePathRaw.replace(/\|/igm, '~')
 
-    const outputFile = `${destination}/${destinationFilePath}`;
-    await ensureFile(outputFile);
-    await writeFile(outputFile, fileContent);
+      const outputFile = `${destination}/${destinationFilePath}`;
+      await ensureFile(outputFile);
+      await writeFile(outputFile, fileContent);
 
-    console.log(chalk.green(`> [ok] ${outputFile}`));
+      console.log(chalk.green(`> [ok] ${outputFile}`));
+    }
   }
 };
 
