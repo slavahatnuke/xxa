@@ -1,5 +1,5 @@
 # xxa
-Copies source folder to destination folder through template engine.
+Dynamic Scaffolder. Copies source folder to destination folder through template engine.
 
 #### Install:
 - `npm i -g xxa`
@@ -83,3 +83,6 @@ module.exports = {
   join: (input, separator) => _.join(input, separator || ''),
 };
 ```
+
+### Options
+- `---xxa-use-dot` uses dot folder is it needed

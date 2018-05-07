@@ -20,7 +20,15 @@ const NormaliseFile = (source, file) => {
 };
 
 const Build = async(source, destination, options, {pipes}) => {
-  const files = await glob(source + '/**/*.*', {dot: true});
+  let files = await glob(source + '/**/*', {dot: true, nodir: true});
+
+  if(!options['xxa-use-dot']) {
+    files = files
+      .filter((file) => {
+        const regexp = /\/\.(.+)\//igm;
+        return !regexp.test(file);
+      })
+  }
   await promiseSeries(files.map((file) => () => Generate(source, file, destination, options, pipes)));
 };
 
