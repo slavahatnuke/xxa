@@ -5,6 +5,8 @@ Copies source folder to destination folder through template engine.
 #### Install:
 - `npm i -g xxa`
 
+![xxa](./spec/demo.gif)
+
 ### Conventions
 - files: `{{{option~pipe1~pipe2~pipeN}}}.txt`
 - content: `{{{option | pipe1 | pipe2 | pipeN}}}`
