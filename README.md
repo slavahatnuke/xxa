@@ -1,12 +1,13 @@
 # xxa
-Dynamic Scaffolder. Copies source folder to destination folder through template engine.
+Dynamic Scaffolder.
+Copies source folder to destination folder through template engine.
 
 #### Install:
 - `npm i -g xxa`
 
 ### Conventions
 - files: `{{{option~pipe1~pipe2~pipeN}}}.txt`
-- content: `{{{option | pipe1 | pipe2 | pipeN}}}.txt`
+- content: `{{{option | pipe1 | pipe2 | pipeN}}}`
 
 ```
   $ xxa <source-dir> <destination-dir> [options]
