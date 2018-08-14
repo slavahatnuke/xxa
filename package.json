@@ -1,6 +1,6 @@
 {
   "name": "xxa",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Dynamic Scaffolder. Copies source folder to destination folder through template engine.",
   "main": "index.js",
   "bin": {
@@ -10,9 +10,22 @@
     "test": "mocha --recursive --reporter spec",
     "test.watch": "mocha --recursive --reporter spec --watch"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "scaffolder",
+    "xxa",
+    "code-generator",
+    "simple"
+  ],
+  "author": "slava.hatnuke",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:slavahatnuke/xxa.git"
+  },
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/slavahatnuke/xxa/issues"
+  },
+  "homepage": "https://github.com/slavahatnuke/xxa#README",
   "dependencies": {
     "chalk": "^2.4.1",
     "escape-string-regexp": "^1.0.5",
