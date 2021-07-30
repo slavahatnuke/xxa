@@ -1,6 +1,6 @@
 {
   "name": "xxa",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "description": "Dynamic Scaffolder. Copies source folder to destination folder through template engine.",
   "main": "index.js",
   "bin": {
@@ -28,14 +28,14 @@
   "homepage": "https://github.com/slavahatnuke/xxa#README",
   "dependencies": {
     "chalk": "^2.4.1",
-    "escape-string-regexp": "^1.0.5",
     "fs-extra": "^6.0.0",
     "glob": "^7.1.2",
     "lodash": "^4.17.10",
     "minimist": "^1.2.0",
     "nunjucks": "^3.2.3",
     "pluralize": "^7.0.0",
-    "promise.series": "^0.2.0"
+    "promise.series": "^0.2.0",
+    "regex-escape": "^3.4.10"
   },
   "devDependencies": {
     "mocha": "^9.0.3"

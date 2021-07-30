@@ -40,7 +40,7 @@ const TemplateFactory = (templateContent, pipes) => {
 };
 
 const ValidateGeneratePossibility = (file, content, options) => {
-  const regexp = () => /{{{\s*([^}~\|\s]+)/igm;
+  const regexp = () => /{{{\s*(\w+)/igm;
   const match = `${content}`.match(regexp());
 
   if (match) {
