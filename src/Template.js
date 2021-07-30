@@ -1,139 +1,78 @@
-const Twig = require('twig');
+const nunjucks = require('nunjucks');
 const _ = require('lodash');
+const Stream = require("stream");
 
 class TemplateClass {
-  constructor(template) {
-    this.init();
-    this.template = this.prepare('' + template)
-  }
+    constructor(template) {
+        this.init();
+        this.template2 = this.prepare(String(template))
 
-  init() {
-    this.replaces = [
-      // meta template
-      {
-        from: '{{{{',
-        to: '!!!!<!',
-        normalize: true
-      },
-      {
-        from: '}}}}',
-        to: '!>!!!!',
-        normalize: true
-      },
+        this.replacer = new nunjucks.Environment([], {
+            autoescape: false,
+            throwOnUndefined: true,
 
-      // {% for ... %}
+            tags: {
+                blockStart: '{{{%',
+                blockEnd: '%}}}',
+                variableStart: '{{{',
+                variableEnd: '}}}',
+                commentStart: '{{{#',
+                commentEnd: '#}}}'
+            }
+        });
+    }
 
-      {
-        from: '{{%',
-        to: '<<<%'
-      },
-      {
-        from: '%}}',
-        to: '%>>>'
-      }
-      ,
-      {
-        from: '{%',
-        to: '<!%',
-        normalize: true
-      },
-      {
-        from: '%}',
-        to: '%!>',
-        normalize: true
-      },
-      {
-        from: '<<<%',
-        to: '{%'
-      },
-      {
-        from: '%>>>',
-        to: '%}'
-      },
+    init() {
+        this.replaces = [
+            {
+                from: '{{{{',
+                to: '{ {{{',
+                normalize: true
+            },
+            {
+                from: '}}}}',
+                to: '}}} }',
+                normalize: true
+            },
+        ];
 
-      // {{ value }}
-      {
-        from: '{{{',
-        to: '<<<!'
-      },
-      {
-        from: '}}}',
-        to: '!>>>'
-      },
-      {
-        from: '{{',
-        to: '<!!',
-        normalize: true
-      },
-      {
-        from: '}}',
-        to: '!!>',
-        normalize: true
-      },
-      {
-        from: '<<<!',
-        to: '{{'
-      },
-      {
-        from: '!>>>',
-        to: '}}'
-      },
+        this.replaces = this.replaces.map((replacement) => {
+            const reFrom = replacement.from.split('').map((i) => '\\' + i).join('');
+            const reTo = replacement.to.split('').map((i) => '\\' + i).join('');
 
-      // meta template normalization
-      {
-        from: '}}}',
-        to: '}}}}',
-        normalize: true
-      },
+            replacement.fromRegExp = new RegExp(reFrom, 'igm');
+            replacement.toRegExp = new RegExp(reTo, 'igm');
 
-      {
-        from: '{{{',
-        to: '{{{{',
-        normalize: true
-      },
+            return replacement;
+        });
+    }
 
-    ];
+    prepare(template) {
+        this.replaces.map((replacement) => {
+            template = template.replace(replacement.fromRegExp, replacement.to)
+        });
 
-    this.replaces = this.replaces.map((replacement) => {
-      const reFrom = replacement.from.split('').map((i) => '\\' + i).join('');
-      const reTo = replacement.to.split('').map((i) => '\\' + i).join('');
 
-      replacement.fromRegExp = new RegExp(reFrom, 'igm');
-      replacement.toRegExp = new RegExp(reTo, 'igm');
+        template = template
+            .replace(/{{{(.*?)}}}/igm, (replacement) => {
+                return replacement.replace(/~/igm, '|')
+            })
 
-      return replacement;
-    });
-  }
+        return template;
+    }
 
-  prepare(template) {
-    this.replaces.map((replacement) => {
-      template = template.replace(replacement.fromRegExp, replacement.to)
-    });
-    return template;
-  }
+    render(data) {
+        return Promise.resolve()
+            .then(() => this.replacer.renderString(this.template2, data));
+    }
 
-  normalize(value) {
-    this.replaces
-      .filter((replacement) => replacement.normalize)
-      .map((replacement) => {
-        value = value.replace(replacement.toRegExp, replacement.from)
-      });
-    return value;
-  }
+    setPipes(pipes) {
+        Object.keys(pipes).forEach((name) => {
+            this.replacer.addFilter(name, pipes[name])
+        })
 
-  render(data) {
-    return Promise.resolve()
-      .then(() => {
-        const template = Twig.twig({data: this.template});
-        return this.normalize(template.render(data));
-      });
-  }
-
-  setPipes(pipes) {
-    return Promise.resolve()
-      .then(() => _.assign(Twig.filters, pipes))
-      .then(() => this);
-  }
+        return Promise.resolve(this)
+    }
 }
 
 const Template = (template) => new TemplateClass(template);
