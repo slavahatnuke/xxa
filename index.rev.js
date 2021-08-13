@@ -8,9 +8,23 @@ const options = _.omit(argv, ['_']);
 const path = require('path');
 
 let autoDestination = false
+
+function toHintName(name) {
+    return name ? _.snakeCase(String(name).split('').join('_')) : '';
+}
+
 if (source && !destination) {
     autoDestination = true
-    destination = path.normalize(`tmp/${Date.now()}`)
+
+    const dirName = path.dirname(source);
+    const hint1 = toHintName(path.basename(dirName));
+    const hint2 = toHintName(path.basename(source));
+
+    destination = path.normalize(
+        `tmp/${Date.now()}.${hint1}.${hint2}`
+            .replace(/\.+/igm, '.')
+            .replace(/\.\//igm, '')
+    )
 }
 
 if (source && destination) {
