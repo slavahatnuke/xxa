@@ -2,8 +2,16 @@ const argv = Object.assign({}, require('minimist')(process.argv.slice(2)));
 const _ = require('lodash');
 const {Rev} = require('./src/Rev');
 
-const [source, destination] = argv._;
+let [source, destination] = argv._;
 const options = _.omit(argv, ['_']);
+
+const path = require('path');
+
+let autoDestination = false
+if (source && !destination) {
+    autoDestination = true
+    destination = path.normalize(`tmp/${Date.now()}`)
+}
 
 if (source && destination) {
 

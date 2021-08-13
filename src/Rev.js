@@ -37,7 +37,7 @@ async function Rev(source, destination, options) {
     source = normDir(source)
     destination = normDir(destination)
 
-    console.log({source, destination, options})
+    // console.log({source, destination, options})
 
     let files = await glob(source + '/**/*', {dot: true, nodir: true});
 
@@ -55,7 +55,7 @@ async function Rev(source, destination, options) {
     await promiseSeries(
         files
             .map(normFile)
-            .map(async (inputFile) => {
+            .map((inputFile) => async () => {
 
 
                 const pointedInputFile = inputFile
@@ -70,15 +70,17 @@ async function Rev(source, destination, options) {
                 await writeFile(outputFile, outputFileContent)
 
                 //
-                console.log({
-                    inputFile,
-                    pointedInputFile,
-                    outputFile
-                })
+                // console.log({
+                //     inputFile,
+                //     pointedInputFile,
+                //     outputFile
+                // })
 
                 console.log(chalk.green(`> [ok] ${outputFile}`));
             })
     )
+
+    console.log(chalk.green(`> [done] ${destination}`));
 }
 
 module.exports = {Rev}
