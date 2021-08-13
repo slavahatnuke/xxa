@@ -27,8 +27,12 @@ async function Copy(source, destination, options) {
     } catch (error) {
         throw error
     } finally {
-        await removeFile(templateDestination);
-        console.log(chalk.grey(`> [copy.template.deleted] ${templateDestination}`));
+        if(options['xxa-no-delete']) {
+            console.log(chalk.grey(`> [copy.template.available] ${templateDestination}`));
+        } else {
+            await removeFile(templateDestination);
+            console.log(chalk.grey(`> [copy.template.deleted] ${templateDestination}`));
+        }
     }
 }
 
