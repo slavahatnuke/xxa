@@ -29,6 +29,7 @@
   "homepage": "https://github.com/slavahatnuke/xxa#README",
   "dependencies": {
     "chalk": "^2.4.1",
+    "flat": "^5.0.2",
     "fs-extra": "^6.0.0",
     "glob": "^7.1.2",
     "lodash": "^4.17.10",

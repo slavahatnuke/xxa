@@ -14,13 +14,13 @@ if (source && destination) {
   $ xxa.rev <source-dir> <destination-dir> [options]
   
   Example:
-    $ xxa.rev article article-template --article="name~Camel"
+    $ xxa.rev article article-template --article="name~Camel" --file.article="name~snake"
     
     <source-dir>
       article/article.html
    
     <destination-dir>
-      article-template/{{{name~Camel}}}.html
+      article-template/{{{name~snake}}}.html
 
     > source content
         article/article.html
@@ -28,7 +28,7 @@ if (source && destination) {
 
 
     > destination content
-        article-template/{{{name~Camel}}}.html
+        article-template/{{{name~snake}}}.html
           {{{name~Camel}}} 
 `)
 }

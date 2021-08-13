@@ -6,6 +6,7 @@ const promiseSeries = require('promise.series');
 const escape = require('escape-string-regexp');
 const fs = require('fs-extra');
 const _ = require('lodash');
+const unflatten = require('flat').unflatten;
 
 const readFile = util.promisify(fs.readFile);
 const ensureFile = util.promisify(fs.ensureFile);
@@ -40,7 +41,7 @@ async function Rev(source, destination, options) {
 
     let files = await glob(source + '/**/*', {dot: true, nodir: true});
 
-    if (!options['xxa-use-dot']) {
+    if (options['xxa-no-dot']) {
         files = files
             .filter((file) => {
                 const regexp = /\/\.(.+)\//igm;
@@ -48,13 +49,19 @@ async function Rev(source, destination, options) {
             })
     }
 
+    const replaces = {...options};
+    const {file = {}} = unflatten(options)
+
+    console.log({file})
+
     await promiseSeries(
         files
             .map(normFile)
             .map(async (inputFile) => {
-                const replaces = {...options};
 
-                const renderedFile = render(inputFile, replaces)
+
+                const renderedFile = render(inputFile, {...replaces, ...file})
+
                 const outputFile = renderedFile
                     .replace(new RegExp(`^${escape(source)}`), destination)
 
@@ -63,6 +70,11 @@ async function Rev(source, destination, options) {
 
                 await ensureFile(outputFile)
                 await writeFile(outputFile, outputFileContent)
+                //
+                // console.log({
+                //     inputFile,
+                //     outputFile
+                // })
 
                 console.log(chalk.green(`> [ok] ${outputFile}`));
             })
