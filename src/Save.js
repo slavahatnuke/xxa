@@ -14,6 +14,7 @@ const writeFile = util.promisify(fs.writeFile);
 const chalk = require('chalk');
 const {DefaultTemplate} = require("./DefaultTemplate");
 const {getFiles, changeSourceToDestination} = require("./files");
+const {replace, renderOptions} = require("./replace");
 
 function normDir(dir) {
     return path.normalize(`${dir}`);
@@ -23,54 +24,14 @@ function normFile(file) {
     return path.normalize(file);
 }
 
-function renderReplaces(replaces) {
-    // replaces is KEY-VALUE object
-    return Object
-        .keys(replaces)
-        .reduce((input, name) => {
-            const value = replaces[name]
-
-            const renderedName = DefaultTemplate(name).renderSync(replaces).trim() || 'XXA_META_KEY';
-            const renderedValue = DefaultTemplate(value).renderSync(replaces).trim() || 'XXA_META_VALUE';
-
-            return {
-                ...input,
-                [renderedName]: renderedValue
-            }
-        }, {});
-}
 
 function renderContentToMustacheTemplate(content, replaces) {
-    // replaces is KEY-VALUE object
-    const cycle2Items = []
+    replaces = Object.fromEntries(Object.entries(replaces)
+        .map(([key, value]) => {
+            return [key, `{{{${value}}}}`]
+        }))
 
-    const ID = () => `${Date.now().toString(16)}${Math.random().toString(16)}`
-
-    const cycle1Content = Object
-        .keys(replaces)
-        .reduce((input, name) => {
-            const value = replaces[name]
-
-            const key = ID()
-            const templateValue = `{{{${value}}}}`;
-
-            cycle2Items.push({
-                key: key,
-                value: templateValue
-            })
-
-            return String(input)
-                .replace(new RegExp(`${escape(name)}`, 'gm'), key)
-        }, content);
-
-    const cycle2Content = cycle2Items
-        .reduce((input, item) => {
-            return String(input)
-                .replace(new RegExp(`${escape(item.key)}`, 'gm'), item.value)
-        }, cycle1Content);
-
-    // console.log({cycle1Content, cycle2Content})
-    return cycle2Content;
+    return replace(content, replaces);
 }
 
 
@@ -106,19 +67,19 @@ async function Save(source, destination, options) {
             })
     }
 
-    const rawReplaces = {...options};
+    const rawOptions = {...options};
     const unflattenOptions = unflatten(options)
 
     const file = unflattenOptions?.xxa?.file || {}
-    const rawFileReplaces = {...rawReplaces, ...file};
+    const rawFileOptions = {...rawOptions, ...file};
 
-    const replaces = renderReplaces(rawFileReplaces);
-    const fileReplaces = renderReplaces(rawFileReplaces);
+    const mapToRender = renderOptions(rawFileOptions);
+    const fileMapToRender = renderOptions(rawFileOptions);
 
     console.log(chalk.green(`> [save] ${source} >> ${destination}`));
     // console.log(chalk.green(`> [save] ${JSON.stringify({from: source, to: destination})}`));
-    console.log(chalk.grey(`> [save.map] ${JSON.stringify(replaces)}`));
-    console.log(chalk.grey(`> [save.map.files] ${JSON.stringify(replaces)}`));
+    console.log(chalk.grey(`> [save.map] ${JSON.stringify(mapToRender)}`));
+    console.log(chalk.grey(`> [save.map.files] ${JSON.stringify(mapToRender)}`));
     // console.log(chalk.grey(`> [input.xxa.file] ${JSON.stringify(fileReplaces)}`));
 
     await promiseSeries(
@@ -128,10 +89,10 @@ async function Save(source, destination, options) {
 
                 const pointedInputFile = changeSourceToDestination(inputFile, source, destination)
 
-                const outputFile = renderContentToMustacheTemplate(pointedInputFile, fileReplaces)
+                const outputFile = renderContentToMustacheTemplate(pointedInputFile, fileMapToRender)
 
                 const inputFileContent = String(await readFile(inputFile));
-                const outputFileContent = renderContentToMustacheTemplate(inputFileContent, replaces);
+                const outputFileContent = renderContentToMustacheTemplate(inputFileContent, mapToRender);
 
                 await ensureFile(outputFile)
                 await writeFile(outputFile, outputFileContent)
