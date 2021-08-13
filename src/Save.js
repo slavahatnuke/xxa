@@ -44,17 +44,58 @@ function renderReplaces(replaces) {
 
 function render(content, replaces) {
     // replaces is KEY-VALUE object
-    return Object
+    const cycle2Items = []
+
+    const ID = () => `${Date.now().toString(16)}${Math.random().toString(16)}`
+
+    const cycle1Content = Object
         .keys(replaces)
         .reduce((input, name) => {
             const value = replaces[name]
 
+            const key = ID()
+            const templateValue = `{{{${value}}}}`;
+
+            cycle2Items.push({
+                key: key,
+                value: templateValue
+            })
+
             return String(input)
-                .replace(new RegExp(`${escape(name)}`, 'gm'), `{{{${value}}}}`)
+                .replace(new RegExp(`${escape(name)}`, 'gm'), key)
         }, content);
+
+    const cycle2Content = cycle2Items
+        .reduce((input, item) => {
+            return String(input)
+                .replace(new RegExp(`${escape(item.key)}`, 'gm'), item.value)
+        }, cycle1Content);
+
+    // console.log({cycle1Content, cycle2Content})
+    return cycle2Content;
 }
 
 async function Save(source, destination, options) {
+    let autoDestination = false
+
+    function toHintName(name) {
+        return name ? _.snakeCase(String(name).split('').join('_')) : '';
+    }
+
+    if (source && !destination) {
+        autoDestination = true
+
+        const dirName = path.dirname(source);
+        const hint1 = toHintName(path.basename(dirName));
+        const hint2 = toHintName(path.basename(source));
+
+        destination = path.normalize(
+            `tmp/${Date.now()}.${hint1}.${hint2}`
+                .replace(/\.+/igm, '.')
+                .replace(/\.\//igm, '')
+        )
+    }
+
     source = normDir(source)
     destination = normDir(destination)
 
@@ -84,7 +125,8 @@ async function Save(source, destination, options) {
 
     console.log(chalk.green(`> [save] ${source} >> ${destination}`));
     // console.log(chalk.green(`> [save] ${JSON.stringify({from: source, to: destination})}`));
-    console.log(chalk.grey(`> [map] ${JSON.stringify(replaces)}`));
+    console.log(chalk.grey(`> [save.map] ${JSON.stringify(replaces)}`));
+    console.log(chalk.grey(`> [save.map.files] ${JSON.stringify(replaces)}`));
     // console.log(chalk.grey(`> [input.xxa.file] ${JSON.stringify(fileReplaces)}`));
 
     await promiseSeries(
@@ -116,6 +158,8 @@ async function Save(source, destination, options) {
     )
 
     console.log(chalk.green(`> [saved] ${destination}`));
+
+    return destination
 }
 
-module.exports = {Save: Save}
+module.exports = {Save}

@@ -1,2 +1,5 @@
 F3 {{{name}}}
-{{{abc | upper}}}
+
+#0 {{{abc | upper}}}
+#1 {{{abc ~ upper}}}
+#2 {{{abc~upper}}}

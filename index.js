@@ -5,11 +5,12 @@ const [source, destination] = argv._;
 const options = _.omit(argv, ['_']);
 
 const {Build} = require('./src/Build');
-const pipes = require('./config/pipes');
+
 
 if (options['xxa-version']) {
     console.log(require('./package.json').version)
 } else if (source && destination) {
+    const pipes = require('./config/pipes');
     Build(source, destination, options, {pipes})
         .catch((error) => console.error(error));
 
