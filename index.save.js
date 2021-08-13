@@ -1,6 +1,6 @@
 const argv = Object.assign({}, require('minimist')(process.argv.slice(2)));
 const _ = require('lodash');
-const {Rev} = require('./src/Rev');
+const {Save} = require('./src/Save');
 
 let [source, destination] = argv._;
 const options = _.omit(argv, ['_']);
@@ -29,7 +29,7 @@ if (source && !destination) {
 
 if (source && destination) {
 
-    Rev(source, destination, options).catch((error) => console.error(error));
+    Save(source, destination, options).catch((error) => console.error(error));
 
 } else {
     console.log(`

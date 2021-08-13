@@ -54,6 +54,10 @@ class TemplateClass {
             .then(() => this.replacer.renderString(this.textTemplate, data));
     }
 
+    renderSync(data) {
+        return this.replacer.renderString(this.textTemplate, data)
+    }
+
     setPipes(pipes) {
         Object.keys(pipes).forEach((name) => {
             this.replacer.addFilter(name, pipes[name])

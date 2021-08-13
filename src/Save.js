@@ -13,6 +13,7 @@ const ensureFile = util.promisify(fs.ensureFile);
 const writeFile = util.promisify(fs.writeFile);
 
 const chalk = require('chalk');
+const {DefaultTemplate} = require("./DefaultTemplate");
 
 function normDir(dir) {
     return path.normalize(`${dir}/`);
@@ -22,18 +23,38 @@ function normFile(file) {
     return path.normalize(file);
 }
 
+function renderReplaces(replaces) {
+    // replaces is KEY-VALUE object
+    const renderedReplaces = Object
+        .keys(replaces)
+        .reduce((input, name) => {
+            const value = replaces[name]
+
+            const renderedName = DefaultTemplate(name).renderSync(replaces).trim() || 'XXA_META_KEY';
+            const renderedValue = DefaultTemplate(value).renderSync(replaces).trim() || 'XXA_META_VALUE';
+
+            return {
+                ...input,
+                [renderedName]: renderedValue
+            }
+        }, {});
+
+    return renderedReplaces;
+}
+
 function render(content, replaces) {
     // replaces is KEY-VALUE object
     return Object
         .keys(replaces)
         .reduce((input, name) => {
             const value = replaces[name]
+
             return String(input)
                 .replace(new RegExp(`${escape(name)}`, 'gm'), `{{{${value}}}}`)
         }, content);
 }
 
-async function Rev(source, destination, options) {
+async function Save(source, destination, options) {
     source = normDir(source)
     destination = normDir(destination)
 
@@ -49,8 +70,22 @@ async function Rev(source, destination, options) {
             })
     }
 
-    const replaces = {...options};
-    const {file = {}} = unflatten(options)
+    const rawReplaces = {...options};
+    const unflattenOptions = unflatten(options)
+
+    const file = unflattenOptions?.xxa?.file || {}
+    const rawFileReplaces = {...rawReplaces, ...file};
+
+    const replaces = renderReplaces(rawFileReplaces);
+    const fileReplaces = renderReplaces(rawFileReplaces);
+
+    // console.log(chalk.grey(`> [input.raw] ${JSON.stringify(rawReplaces)}`));
+    // console.log(chalk.grey(`> [input.raw.xxa.file] ${JSON.stringify(rawReplaces)}`));
+
+    console.log(chalk.green(`> [run] ${source} >> ${destination}`));
+    // console.log(chalk.green(`> [save] ${JSON.stringify({from: source, to: destination})}`));
+    console.log(chalk.grey(`> [map] ${JSON.stringify(replaces)}`));
+    // console.log(chalk.grey(`> [input.xxa.file] ${JSON.stringify(fileReplaces)}`));
 
     await promiseSeries(
         files
@@ -61,7 +96,7 @@ async function Rev(source, destination, options) {
                 const pointedInputFile = inputFile
                     .replace(new RegExp(`^${escape(source)}`), destination)
 
-                const outputFile = render(pointedInputFile, {...replaces, ...file})
+                const outputFile = render(pointedInputFile, fileReplaces)
 
                 const inputFileContent = String(await readFile(inputFile));
                 const outputFileContent = render(inputFileContent, replaces);
@@ -83,4 +118,4 @@ async function Rev(source, destination, options) {
     console.log(chalk.green(`> [done] ${destination}`));
 }
 
-module.exports = {Rev}
+module.exports = {Save: Save}
