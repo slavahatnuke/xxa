@@ -13,7 +13,7 @@ const writeFile = util.promisify(fs.writeFile);
 
 const chalk = require('chalk');
 const {DefaultTemplate} = require("./DefaultTemplate");
-const {getFiles} = require("./getFiles");
+const {getFiles, changeSourceToDestination} = require("./files");
 
 function normDir(dir) {
     return path.normalize(`${dir}`);
@@ -25,7 +25,7 @@ function normFile(file) {
 
 function renderReplaces(replaces) {
     // replaces is KEY-VALUE object
-    const renderedReplaces = Object
+    return Object
         .keys(replaces)
         .reduce((input, name) => {
             const value = replaces[name]
@@ -38,11 +38,9 @@ function renderReplaces(replaces) {
                 [renderedName]: renderedValue
             }
         }, {});
-
-    return renderedReplaces;
 }
 
-function render(content, replaces) {
+function renderContentToMustacheTemplate(content, replaces) {
     // replaces is KEY-VALUE object
     const cycle2Items = []
 
@@ -75,11 +73,6 @@ function render(content, replaces) {
     return cycle2Content;
 }
 
-
-function changeSourceToDestination(inputFile, source, destination) {
-    return inputFile
-        .replace(new RegExp(`^${escape(source)}`), destination);
-}
 
 async function Save(source, destination, options) {
     function toHintName(name) {
@@ -135,10 +128,10 @@ async function Save(source, destination, options) {
 
                 const pointedInputFile = changeSourceToDestination(inputFile, source, destination)
 
-                const outputFile = render(pointedInputFile, fileReplaces)
+                const outputFile = renderContentToMustacheTemplate(pointedInputFile, fileReplaces)
 
                 const inputFileContent = String(await readFile(inputFile));
-                const outputFileContent = render(inputFileContent, replaces);
+                const outputFileContent = renderContentToMustacheTemplate(inputFileContent, replaces);
 
                 await ensureFile(outputFile)
                 await writeFile(outputFile, outputFileContent)

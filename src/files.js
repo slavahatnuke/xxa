@@ -1,4 +1,5 @@
 const util = require("util");
+const escape = require("escape-string-regexp");
 const glob = util.promisify(require('glob'));
 
 async function getFiles(source) {
@@ -12,4 +13,9 @@ async function getFiles(source) {
     );
 }
 
-module.exports = {getFiles}
+function changeSourceToDestination(inputFile, source, destination) {
+    return inputFile
+        .replace(new RegExp(`^${escape(source)}`), destination);
+}
+
+module.exports = {getFiles: getFiles, changeSourceToDestination}

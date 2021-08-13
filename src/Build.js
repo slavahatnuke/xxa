@@ -14,7 +14,7 @@ const writeFile = util.promisify(fs.writeFile);
 const chalk = require('chalk');
 
 const Template = require('./Template');
-const {getFiles} = require("./getFiles");
+const {getFiles} = require("./files");
 
 const NormaliseFile = (source, file) => {
     return file.replace(new RegExp(`^${escape(source)}\/?`), '');
@@ -76,7 +76,6 @@ const Generate = async (source, file, destination, options, pipes) => {
     const normalisedFile = NormaliseFile(source, file);
     const filePathTemplate = normalisedFile.replace(/~/igm, '|');
 
-    console.log({normalisedFile})
     if (ValidateGeneratePossibility(normalisedFile, filePathTemplate, options)) {
         // console.log(normalisedFile, file, destination, options);
 
