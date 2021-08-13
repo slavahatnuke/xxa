@@ -1,7 +1,6 @@
 const path = require('path');
 const util = require('util');
 
-const glob = util.promisify(require('glob'));
 const promiseSeries = require('promise.series');
 const escape = require('escape-string-regexp');
 const fs = require('fs-extra');
@@ -14,9 +13,10 @@ const writeFile = util.promisify(fs.writeFile);
 
 const chalk = require('chalk');
 const {DefaultTemplate} = require("./DefaultTemplate");
+const {getFiles} = require("./getFiles");
 
 function normDir(dir) {
-    return path.normalize(`${dir}/`);
+    return path.normalize(`${dir}`);
 }
 
 function normFile(file) {
@@ -75,16 +75,18 @@ function render(content, replaces) {
     return cycle2Content;
 }
 
-async function Save(source, destination, options) {
-    let autoDestination = false
 
+function changeSourceToDestination(inputFile, source, destination) {
+    return inputFile
+        .replace(new RegExp(`^${escape(source)}`), destination);
+}
+
+async function Save(source, destination, options) {
     function toHintName(name) {
         return name ? _.snakeCase(String(name).split('').join('_')) : '';
     }
 
     if (source && !destination) {
-        autoDestination = true
-
         const dirName = path.dirname(source);
         const hint1 = toHintName(path.basename(dirName));
         const hint2 = toHintName(path.basename(source));
@@ -101,7 +103,7 @@ async function Save(source, destination, options) {
 
     // console.log({source, destination, options})
 
-    let files = await glob(source + '/**/*', {dot: true, nodir: true});
+    let files = await getFiles(source);
 
     if (options['xxa-no-dot']) {
         files = files
@@ -120,9 +122,6 @@ async function Save(source, destination, options) {
     const replaces = renderReplaces(rawFileReplaces);
     const fileReplaces = renderReplaces(rawFileReplaces);
 
-    // console.log(chalk.grey(`> [input.raw] ${JSON.stringify(rawReplaces)}`));
-    // console.log(chalk.grey(`> [input.raw.xxa.file] ${JSON.stringify(rawReplaces)}`));
-
     console.log(chalk.green(`> [save] ${source} >> ${destination}`));
     // console.log(chalk.green(`> [save] ${JSON.stringify({from: source, to: destination})}`));
     console.log(chalk.grey(`> [save.map] ${JSON.stringify(replaces)}`));
@@ -134,9 +133,7 @@ async function Save(source, destination, options) {
             .map(normFile)
             .map((inputFile) => async () => {
 
-
-                const pointedInputFile = inputFile
-                    .replace(new RegExp(`^${escape(source)}`), destination)
+                const pointedInputFile = changeSourceToDestination(inputFile, source, destination)
 
                 const outputFile = render(pointedInputFile, fileReplaces)
 
@@ -146,7 +143,7 @@ async function Save(source, destination, options) {
                 await ensureFile(outputFile)
                 await writeFile(outputFile, outputFileContent)
 
-                //
+
                 // console.log({
                 //     inputFile,
                 //     pointedInputFile,

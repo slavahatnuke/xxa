@@ -5,7 +5,7 @@ const {Save} = require('./src/Save');
 let [source, destination] = argv._;
 const options = _.omit(argv, ['_']);
 
-if (source && destination) {
+if (source) {
 
     Save(source, destination, options).catch((error) => console.error(error));
 

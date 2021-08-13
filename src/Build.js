@@ -14,13 +14,14 @@ const writeFile = util.promisify(fs.writeFile);
 const chalk = require('chalk');
 
 const Template = require('./Template');
+const {getFiles} = require("./getFiles");
 
 const NormaliseFile = (source, file) => {
     return file.replace(new RegExp(`^${escape(source)}\/?`), '');
 };
 
 const Build = async (source, destination, options, {pipes}) => {
-    let files = await glob(source + '/**/*', {dot: true, nodir: true});
+    let files = await getFiles(source);
 
     if (options['xxa-no-dot']) {
         files = files
@@ -75,6 +76,7 @@ const Generate = async (source, file, destination, options, pipes) => {
     const normalisedFile = NormaliseFile(source, file);
     const filePathTemplate = normalisedFile.replace(/~/igm, '|');
 
+    console.log({normalisedFile})
     if (ValidateGeneratePossibility(normalisedFile, filePathTemplate, options)) {
         // console.log(normalisedFile, file, destination, options);
 
@@ -85,7 +87,11 @@ const Generate = async (source, file, destination, options, pipes) => {
             const destinationFilePathRaw = await TemplateFactory(filePathTemplate, pipes).render(options);
             const destinationFilePath = destinationFilePathRaw.replace(/\|/igm, '~')
 
-            const outputFile = `${destination}/${destinationFilePath}`;
+            const outputFile = [destination, destinationFilePath]
+                .map((x) => x.trim())
+                .filter(Boolean)
+                .join('/')
+
             await ensureFile(outputFile);
             await writeFile(outputFile, fileContent);
 
