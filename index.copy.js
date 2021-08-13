@@ -5,7 +5,7 @@ const {Copy} = require('./src/Copy');
 let [source, destination] = argv._;
 const options = _.omit(argv, ['_']);
 
-if (source) {
+if (source && destination) {
 
     Copy(source, destination, options).catch((error) => console.error(error));
 
@@ -14,7 +14,7 @@ if (source) {
   $ xxa.copy <source-dir> <destination-dir> [options]
   
   Example:
-    $ xxa.copy article post --article="toKeyword~camel" --toKeyword="post"  
+    $ xxa.copy article post --article=post
     
     <source-dir>
       article/article.html

@@ -55,7 +55,12 @@ class TemplateClass {
     }
 
     renderSync(data) {
-        return this.replacer.renderString(this.textTemplate, data)
+        try {
+            return this.replacer.renderString(this.textTemplate, data)
+        } catch (error) {
+            console.error(error)
+            return ''
+        }
     }
 
     setPipes(pipes) {

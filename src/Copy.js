@@ -8,7 +8,12 @@ const chalk = require('chalk');
 const {Save} = require("./Save");
 const {Build} = require("./Build");
 const pipes = require("../config/pipes");
-const {getFiles} = require("./files");
+const {getFiles, changeSourceToDestination} = require("./files");
+const {renderOptions, replace} = require("./replace");
+
+const readFile = util.promisify(fs.readFile);
+const ensureFile = util.promisify(fs.ensureFile);
+const writeFile = util.promisify(fs.writeFile);
 
 
 async function Copy(source, destination, options) {
@@ -24,28 +29,32 @@ async function Copy(source, destination, options) {
             })
     }
 
-    console.log(files)
-    //
-    // try {
-    //
-    //     console.log(chalk.grey(`> [copy.template] ${templateDestination}`));
-    //
-    //     const pipes = require('../config/pipes');
-    //
-    //     console.log(chalk.grey(`> [copy.build] ${templateDestination} >> ${destination}`));
-    //     await Build(templateDestination, destination, options, {pipes})
-    //
-    //     console.log(chalk.green(`> [copied] ${source} >> ${destination}`));
-    // } catch (error) {
-    //     throw error
-    // } finally {
-    //     if(options['xxa-no-delete']) {
-    //         console.log(chalk.grey(`> [copy.template.available] ${templateDestination}`));
-    //     } else {
-    //         await removeFile(templateDestination);
-    //         console.log(chalk.grey(`> [copy.template.deleted] ${templateDestination}`));
-    //     }
-    // }
+    const mapToRender = renderOptions(options);
+
+    console.log(chalk.grey(`> [map] ${JSON.stringify(mapToRender)}`))
+
+    const fileDirection = files.map((from) => {
+        const pointer = changeSourceToDestination(from, source, destination);
+        const to = replace(pointer, mapToRender);
+
+        return {
+            from,
+            to
+        }
+    });
+
+    for (const {from, to} of fileDirection) {
+        const content = String(await readFile(from));
+        const nextContent = replace(content, mapToRender);
+
+        await ensureFile(to)
+        await writeFile(to, nextContent)
+
+        console.log(chalk.green(`> [ok] ${to}`))
+    }
+
+    console.log(chalk.green(`> [copied] ${source} >> ${destination}`))
+
 }
 
 module.exports = {Copy: Copy}
