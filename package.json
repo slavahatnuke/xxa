@@ -1,10 +1,11 @@
 {
   "name": "xxa",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Dynamic Scaffolder. Copies source folder to destination folder through template engine.",
   "main": "index.js",
   "bin": {
-    "xxa": "bin/xxa.js"
+    "xxa": "bin/xxa.js",
+    "xxa.rev": "bin/xxa.rev.js"
   },
   "scripts": {
     "test": "mocha --recursive --reporter spec",
