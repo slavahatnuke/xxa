@@ -30,7 +30,11 @@ const Build = async (source, destination, options, {pipes}) => {
             })
     }
 
+    console.log(chalk.green(`> [create] ${source} >> ${destination}`));
+
     await promiseSeries(files.map((file) => () => Generate(source, file, destination, options, pipes)));
+
+    console.log(chalk.green(`> [created] ${destination}`));
 };
 
 

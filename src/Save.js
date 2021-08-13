@@ -82,7 +82,7 @@ async function Save(source, destination, options) {
     // console.log(chalk.grey(`> [input.raw] ${JSON.stringify(rawReplaces)}`));
     // console.log(chalk.grey(`> [input.raw.xxa.file] ${JSON.stringify(rawReplaces)}`));
 
-    console.log(chalk.green(`> [run] ${source} >> ${destination}`));
+    console.log(chalk.green(`> [save] ${source} >> ${destination}`));
     // console.log(chalk.green(`> [save] ${JSON.stringify({from: source, to: destination})}`));
     console.log(chalk.grey(`> [map] ${JSON.stringify(replaces)}`));
     // console.log(chalk.grey(`> [input.xxa.file] ${JSON.stringify(fileReplaces)}`));
@@ -115,7 +115,7 @@ async function Save(source, destination, options) {
             })
     )
 
-    console.log(chalk.green(`> [done] ${destination}`));
+    console.log(chalk.green(`> [saved] ${destination}`));
 }
 
 module.exports = {Save: Save}
