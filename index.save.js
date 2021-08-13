@@ -33,10 +33,10 @@ if (source && destination) {
 
 } else {
     console.log(`
-  $ xxa.rev <source-dir> <destination-dir> [options]
+  $ xxa.save <source-dir> <destination-dir> [options]
   
   Example:
-    $ xxa.rev article article-template --article="name~Camel" --file.article="name~snake"
+    $ xxa.save article article-template --article="name~Camel" --file.article="name~snake"
     
     <source-dir>
       article/article.html
