@@ -88,4 +88,5 @@ module.exports = {
 ```
 
 ### Options
-- `---xxa-use-dot` uses dot folder is it needed
+- `--xxa-no-dot` don't use dot
+- `--xxa-version` prints version

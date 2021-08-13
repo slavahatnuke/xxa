@@ -52,29 +52,29 @@ async function Rev(source, destination, options) {
     const replaces = {...options};
     const {file = {}} = unflatten(options)
 
-    console.log({file})
-
     await promiseSeries(
         files
             .map(normFile)
             .map(async (inputFile) => {
 
 
-                const renderedFile = render(inputFile, {...replaces, ...file})
-
-                const outputFile = renderedFile
+                const pointedInputFile = inputFile
                     .replace(new RegExp(`^${escape(source)}`), destination)
+
+                const outputFile = render(pointedInputFile, {...replaces, ...file})
 
                 const inputFileContent = String(await readFile(inputFile));
                 const outputFileContent = render(inputFileContent, replaces);
 
                 await ensureFile(outputFile)
                 await writeFile(outputFile, outputFileContent)
+
                 //
-                // console.log({
-                //     inputFile,
-                //     outputFile
-                // })
+                console.log({
+                    inputFile,
+                    pointedInputFile,
+                    outputFile
+                })
 
                 console.log(chalk.green(`> [ok] ${outputFile}`));
             })

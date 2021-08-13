@@ -29,6 +29,7 @@ const Build = async (source, destination, options, {pipes}) => {
                 return !regexp.test(file);
             })
     }
+
     await promiseSeries(files.map((file) => () => Generate(source, file, destination, options, pipes)));
 };
 
