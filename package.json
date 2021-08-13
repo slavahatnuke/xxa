@@ -1,6 +1,6 @@
 {
   "name": "xxa",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "Dynamic Scaffolder. Copies source folder to destination folder through template engine.",
   "main": "index.js",
   "bin": {
