@@ -38,55 +38,59 @@ const _ = require('lodash');
 const pluralize = require('pluralize');
 
 module.exports = {
-  camel: (input) => _.camelCase(input),
-  Camel: (input) => _.upperFirst(_.camelCase(input)),
+    camel: (input) => _.camelCase(input),
+    Camel: (input) => _.upperFirst(_.camelCase(input)),
 
-  kebab: (input) => _.kebabCase(input),
-  Kebab: (input) => _.upperFirst(_.kebabCase(input)),
+    kebab: (input) => _.kebabCase(input),
+    Kebab: (input) => _.upperFirst(_.kebabCase(input)),
 
-  snake: (input) => _.snakeCase(input),
-  Snake: (input) => _.upperFirst(_.snakeCase(input)),
+    snake: (input) => _.snakeCase(input),
+    Snake: (input) => _.upperFirst(_.snakeCase(input)),
 
-  lower: (input) => _.toLower(input),
-  upper: (input) => _.toUpper(input),
+    lower: (input) => _.toLower(input),
+    upper: (input) => _.toUpper(input),
+    up: (input) => _.toUpper(input),
 
-  toUpper: (input) => _.toUpper(input),
-  toLower: (input) => _.toLower(input),
+    Lower: (input) => _.upperFirst(_.toLower(input)),
+    Upper: (input) => _.toUpper(input),
 
-  camelCase: (input) => _.camelCase(input),
-  kebabCase: (input) => _.kebabCase(input),
-  snakeCase: (input) => _.snakeCase(input),
-  startCase: (input) => _.startCase(input),
+    toUpper: (input) => _.toUpper(input),
+    toLower: (input) => _.toLower(input),
 
-  lowerCase: (input) => _.lowerCase(input),
-  upperCase: (input) => _.upperCase(input),
+    camelCase: (input) => _.camelCase(input),
+    kebabCase: (input) => _.kebabCase(input),
+    snakeCase: (input) => _.snakeCase(input),
+    startCase: (input) => _.startCase(input),
 
-  lowerFirst: (input) => _.lowerFirst(input),
-  upperFirst: (input) => _.upperFirst(input),
+    lowerCase: (input) => _.lowerCase(input),
+    upperCase: (input) => _.upperCase(input),
 
-  capitalize: (input) => _.capitalize(input),
-  trim: (input) => _.trim(input),
+    lowerFirst: (input) => _.lowerFirst(input),
+    upperFirst: (input) => _.upperFirst(input),
 
-  trimStart: (input) => _.trimStart(input),
-  trimEnd: (input) => _.trimEnd(input),
+    capitalize: (input) => _.capitalize(input),
+    trim: (input) => _.trim(input),
 
-  plural: (input) => pluralize.plural(input),
-  Plural: (input) => _.upperFirst(pluralize.plural(input)),
+    trimStart: (input) => _.trimStart(input),
+    trimEnd: (input) => _.trimEnd(input),
 
-  singular: (input) => pluralize.singular(input),
-  Singular: (input) => _.upperFirst(pluralize.singular(input)),
+    plural: (input) => pluralize.plural(input),
+    Plural: (input) => _.upperFirst(pluralize.plural(input)),
 
-  toArray: (text) => _.snakeCase(text).split('_'),
-  toString: (array) => _.isArray(array) ? array.join('_') : '' + array,
+    singular: (input) => pluralize.singular(input),
+    Singular: (input) => _.upperFirst(pluralize.singular(input)),
 
-  first: (array) => _.first(array),
-  last: (array) => _.last(array),
+    toArray: (text) => _.snakeCase(text).split('_'),
+    toString: (array) => _.isArray(array) ? array.join('_') : '' + array,
 
-  slice: (input, start, end) => _.slice(input, start, end),
-  join: (input, separator) => _.join(input, separator || ''),
+    first: (array) => _.first(array),
+    last: (array) => _.last(array),
+
+    slice: (input, start, end) => _.slice(input, start, end),
+    join: (input, separator) => _.join(input, separator || ''),
 };
 ```
 
 ### Options
-- `--xxa-no-dot` don't use dot
+- `--xxa-no-dot`
 - `--xxa-version` prints version
