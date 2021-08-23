@@ -44,7 +44,7 @@ function renderOptions(options, optionsArguments = {}) {
             const data = {...options, ...optionsArguments};
 
             const renderedName = DefaultTemplate(name).renderSync(data).trim() || 'XXA_META_RENDER_KEY';
-            const renderedValue = DefaultTemplate(value).renderSync(data).trim() || 'XXA_META_RENDER_VALUE';
+            const renderedValue = DefaultTemplate(value).renderSync(data).trim() || '';
 
             return {
                 ...input,
