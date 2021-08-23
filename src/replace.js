@@ -34,15 +34,17 @@ function replace(content, replaces) {
 }
 
 
-function renderOptions(options) {
+function renderOptions(options, optionsArguments = {}) {
     // replaces is KEY-VALUE object
     return Object
         .keys(options)
         .reduce((input, name) => {
             const value = options[name]
 
-            const renderedName = DefaultTemplate(name).renderSync(options).trim() || 'XXA_META_RENDER_KEY';
-            const renderedValue = DefaultTemplate(value).renderSync(options).trim() || 'XXA_META_RENDER_VALUE';
+            const data = {...options, ...optionsArguments};
+
+            const renderedName = DefaultTemplate(name).renderSync(data).trim() || 'XXA_META_RENDER_KEY';
+            const renderedValue = DefaultTemplate(value).renderSync(data).trim() || 'XXA_META_RENDER_VALUE';
 
             return {
                 ...input,

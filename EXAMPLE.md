@@ -14,3 +14,5 @@
 
 - `bin/xxa.copy.js spec/x1.rev tmp/1 --article={{{toKeyword~camel}}} --toKeyword=post`
 - `bin/xxa.copy.js spec/x1.rev tmp/101 --{{{fromKeyword}}}={{{toKeyword}}} --{{{fromKeyword~Camel}}}={{{toKeyword~Camel}}} --{{{fromKeyword~camel}}}={{{toKeyword~camel}}} --fromKeyword article --toKeyword post`
+- `bin/xxa.copy.js --{{{_2~camel}}}={{{_3~camel}}} --{{{_2~Camel}}}={{{_3~Camel}}} spec/x1.rev tmp/1 article post`
+- `bin/xxa.copy.js --{{{_2~camel}}}={{{_3~camel}}} --{{{_2~Camel}}}={{{_3~Camel}}} --{{{_2~snake~upper}}}={{{_3~snake~upper}}} spec/x1.rev tmp/3 article post`

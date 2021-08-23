@@ -6,7 +6,8 @@
   "bin": {
     "xxa": "bin/xxa.js",
     "xxa.save": "bin/xxa.save.js",
-    "xxa.copy": "bin/xxa.copy.js"
+    "xxa.copy": "bin/xxa.copy.js",
+    "copyx": "bin/xxa.copy.js"
   },
   "scripts": {
     "test": "mocha --recursive --reporter spec",

@@ -16,7 +16,7 @@ const ensureFile = util.promisify(fs.ensureFile);
 const writeFile = util.promisify(fs.writeFile);
 
 
-async function Copy(source, destination, options) {
+async function Copy(source, destination, options, args) {
     console.log(chalk.green(`> [copy] ${source} >> ${destination}`));
 
     let files = await getFiles(source);
@@ -29,8 +29,17 @@ async function Copy(source, destination, options) {
             })
     }
 
-    const mapToRender = renderOptions(options);
 
+    const argsMap = args.reduce((a, arg, idx) => {
+        return {
+            [`${'_' + idx}`]: arg,
+            ...a
+        }
+    }, {});
+
+    const mapToRender = renderOptions(options, argsMap);
+
+    console.log(chalk.grey(`> [arguments] ${JSON.stringify(argsMap)}`))
     console.log(chalk.grey(`> [map] ${JSON.stringify(mapToRender)}`))
 
     const fileDirection = files.map((from) => {
